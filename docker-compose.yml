@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  sse-server:
+    build:
+      context: .
+      dockerfile: Dockerfile-sse
+    container_name: doctor-sse-server
+    ports:
+      - "8888:8888"
+    env_file:
+      - .env
+    networks:
+      - doctor-network
+    restart: unless-stopped
+
+  streamlit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile-st
+    container_name: doctor-streamlit-app
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    depends_on:
+      - sse-server
+    networks:
+      - doctor-network
+    restart: unless-stopped
+
+networks:
+  doctor-network:
+    driver: bridge
